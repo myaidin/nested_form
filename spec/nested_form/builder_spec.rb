@@ -31,6 +31,12 @@ require "spec_helper"
           end
         end
       end
+
+      it "has an add link with positionable attributes" do
+        subject.link_to_add("Add", :tasks, :position => :before).should == '<a href="javascript:void(0)" class="add_nested_fields" data-association="tasks" data-insert-position="before">Add</a>'
+        subject.link_to_add("Add", :tasks, :node => 'table').should == '<a href="javascript:void(0)" class="add_nested_fields" data-association="tasks" data-insert-node="table">Add</a>'
+        subject.link_to_add("Add", :tasks, :node => 'table', :position => :before).should == '<a href="javascript:void(0)" class="add_nested_fields" data-association="tasks" data-insert-node="table" data-insert-position="before">Add</a>'
+      end
       
       describe '#link_to_remove' do
         it "behaves similar to a Rails link_to" do

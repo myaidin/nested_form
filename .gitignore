@@ -8,3 +8,4 @@ gemfiles/*.lock
 spec/dummy/tmp/
 spec/dummy/db/*.sqlite3
 .rbx
+.idea

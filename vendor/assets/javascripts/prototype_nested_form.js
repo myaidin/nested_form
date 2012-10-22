@@ -4,7 +4,8 @@ document.observe('click', function(e, el) {
     var assoc     = el.readAttribute('data-association');      // Name of child
     var blueprint = $(el.readAttribute('data-blueprint-id'));
     var content   = blueprint.readAttribute('data-blueprint'); // Fields template
-
+    var insert_node   = el.readAttribute('data-insert-node') || el;            // Insertion Node
+    var insert_position   = el.readAttribute('data-insert-position') || 'before';            // Insertion Position
     // Make the context correct by replacing <parents> with the generated ID
     // of each of the parent objects
     var context = (el.getOffsetParent('.fields').firstDescendant().readAttribute('name') || '').replace(new RegExp('\[[a-z_]+\]$'), '');
@@ -35,7 +36,8 @@ document.observe('click', function(e, el) {
     var new_id  = new Date().getTime();
     content     = content.replace(regexp, new_id);
 
-    var field = el.insert({ before: content });
+    if (Object.isString(insert_node)) insert_node = e.findElement('form '+insert_node)
+    var field = insert_node.insert({ insert_position: content });
     field.fire('nested:fieldAdded', {field: field});
     field.fire('nested:fieldAdded:' + assoc, {field: field});
     return false;

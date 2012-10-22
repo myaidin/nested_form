@@ -7,10 +7,12 @@ jQuery(function($) {
   NestedFormEvents.prototype = {
     addFields: function(e) {
       // Setup
-      var link      = e.currentTarget;
-      var assoc     = $(link).data('association');                // Name of child
-      var blueprint = $('#' + $(link).data('blueprint-id'));
-      var content   = blueprint.data('blueprint');                // Fields template
+      var link       = e.currentTarget;
+      var assoc      = $(link).data('association');                // Name of child
+      var blueprint  = $('#' + $(link).data('blueprint-id'));
+      var content    = blueprint.data('blueprint');                // Fields template
+      var node       = $(link).data('node') || link;            // Insertion Node
+      var position   = $(link).data('position') || 'before';    // Insertion Position
 
       // Make the context correct by replacing <parents> with the generated ID
       // of each of the parent objects
@@ -42,15 +44,27 @@ jQuery(function($) {
       var new_id  = new Date().getTime();
       content     = content.replace(regexp, new_id);
 
-      var field = this.insertFields(content, assoc, link);
+      var field = this.insertFields(content, assoc, link, node, position);
       // bubble up event upto document (through form)
       field
         .trigger({ type: 'nested:fieldAdded', field: field })
         .trigger({ type: 'nested:fieldAdded:' + assoc, field: field });
       return false;
     },
-    insertFields: function(content, assoc, link) {
-      return $(content).insertBefore(link);
+    insertFields: function(content, assoc, link, node, position) {
+      node = $(link).closest("form").find(node);
+      switch(position){
+        case 'before':
+          return $(content).insertBefore(node);
+        case 'after':
+          return $(content).insertAfter(node);
+        case 'top':
+          return $(content).prependTo(node);
+        case 'bottom':
+          return $(content).appendTo(node);
+        default:
+          return $(content).insertBefore(link);
+      }
     },
     removeFields: function(e) {
       var $link = $(e.currentTarget),
@@ -84,23 +98,23 @@ jQuery(function($) {
  *
  */
 (function($) {
-        $.fn.closestChild = function(selector) {
-                // breadth first search for the first matched node
-                if (selector && selector != '') {
-                        var queue = [];
-                        queue.push(this);
-                        while(queue.length > 0) {
-                                var node = queue.shift();
-                                var children = node.children();
-                                for(var i = 0; i < children.length; ++i) {
-                                        var child = $(children[i]);
-                                        if (child.is(selector)) {
-                                                return child; //well, we found one
-                                        }
-                                        queue.push(child);
-                                }
-                        }
-                }
-                return $();//nothing found
-        };
+  $.fn.closestChild = function(selector) {
+    // breadth first search for the first matched node
+    if (selector && selector != '') {
+      var queue = [];
+      queue.push(this);
+      while(queue.length > 0) {
+        var node = queue.shift();
+        var children = node.children();
+        for(var i = 0; i < children.length; ++i) {
+          var child = $(children[i]);
+          if (child.is(selector)) {
+            return child; //well, we found one
+          }
+          queue.push(child);
+        }
+      }
+    }
+    return $();//nothing found
+  };
 })(jQuery);
