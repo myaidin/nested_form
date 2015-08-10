@@ -42,7 +42,7 @@ jQuery(function($) {
       // Make a unique ID for the new child
       var regexp  = new RegExp('new_' + assoc, 'g');
       var new_id  = new Date().getTime();
-      content     = content.replace(regexp, new_id);
+      content     = $.trim(content.replace(regexp, new_id));
 
       var field = this.insertFields(content, assoc, link, node, position);
       // bubble up event upto document (through form)
